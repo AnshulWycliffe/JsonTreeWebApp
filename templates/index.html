@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive JSON viewer with collapsible tree structure">
+    <meta name="author" content="Anshul Wycliffe">
+    <title>JSON Tree WEb App</title>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Optional: Add favicon -->
+    <!-- <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}"> -->
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WyDBase</h1>
+        </header>
+        <main>
+            <div id="json-tree" class="json-tree" role="tree" aria-label="JSON structure"></div>
+        </main>
+    </div>
+
+    <!-- Application Scripts -->
+    <script>
+        /**
+ * JSON Tree Viewer Application
+ * Renders a collapsible tree view of JSON data with type information
+ */
+(function() {
+    'use strict';
+
+    const CONFIG = {
+        expandIcon: '+',
+        collapseIcon: '-'
+    };
+
+    // Safely parse JSON data from server
+    const jsonData = JSON.parse('{{ data | tojson | safe }}');
+
+    /**
+     * Creates a DOM element with given properties
+     */
+    function createElement(tag, props = {}, attributes = {}) {
+        const element = document.createElement(tag);
+        Object.assign(element, props);
+        // Add data attributes and other HTML attributes
+        Object.entries(attributes).forEach(([key, value]) => {
+            element.setAttribute(key, value);
+        });
+        return element;
+    }
+
+    /**
+     * Gets the precise type of a value
+     */
+    function getValueType(value) {
+        if (value === null) return 'null';
+        if (Array.isArray(value)) return 'array';
+        if (value instanceof Date) return 'date';
+        return typeof value;
+    }
+
+    /**
+     * Formats a value for display based on its type
+     */
+    function formatValue(value, type) {
+        switch (type) {
+            case 'string':
+                return `"${value}"`;
+            case 'null':
+                return 'null';
+            case 'undefined':
+                return 'undefined';
+            case 'date':
+                return `"${value.toISOString()}"`;
+            default:
+                return String(value);
+        }
+    }
+
+    /**
+     * Creates the value display element with appropriate type information
+     */
+    function createValueDisplay(value) {
+        const type = getValueType(value);
+        const isExpandable = type === 'object' || type === 'array';
+        
+        if (isExpandable) {
+            return createElement('span', {
+                className: 'json-value',
+                textContent: type === 'array' ? ': [' : ': {'
+            }, {
+                'data-type': type
+            });
+        }
+
+        return createElement('span', {
+            className: 'json-value',
+            textContent: `: ${formatValue(value, type)}`
+        }, {
+            'data-type': type
+        });
+    }
+
+    /**
+     * Renders a JSON tree structure
+     */
+    function renderJsonTree(json, container, indent = 0) {
+        Object.entries(json).forEach(([key, value]) => {
+            const type = getValueType(value);
+            const isExpandable = type === 'object' || type === 'array';
+
+            const node = createElement('div', {
+                className: 'json-node',
+                role: 'treeitem'
+            }, {
+                'style': `margin-left: ${indent * 20}px;`,
+                'data-key': key
+            });
+
+            // Create toggle button for expandable values
+            const toggleButton = isExpandable ? createElement('button', {
+                className: 'json-toggle',
+                textContent: CONFIG.expandIcon,
+                type: 'button'
+            }, {
+                'aria-label': 'Toggle visibility',
+                'aria-expanded': 'false'
+            }) : null;
+
+            const keySpan = createElement('span', {
+                className: 'json-key',
+                textContent: `"${key}"`
+            });
+
+            const valueSpan = createValueDisplay(value);
+
+            if (isExpandable) {
+                const childContainer = createElement('div', {
+                    className: 'json-children'
+                }, {
+                    'style': 'display: none',
+                    'role': 'group'
+                });
+
+                node.append(toggleButton, keySpan, valueSpan, childContainer);
+                renderJsonTree(value, childContainer, indent + 1);
+
+                const closingBrace = createElement('span', {
+                    className: 'json-value',
+                    textContent: type === 'array' ? ']' : '}'
+                });
+                node.appendChild(closingBrace);
+
+                toggleButton.addEventListener('click', () => {
+                    const isCollapsed = childContainer.style.display === 'none';
+                    childContainer.style.display = isCollapsed ? 'block' : 'none';
+                    toggleButton.textContent = isCollapsed ? CONFIG.collapseIcon : CONFIG.expandIcon;
+                    toggleButton.setAttribute('aria-expanded', isCollapsed);
+                });
+            } else {
+                node.append(keySpan, valueSpan);
+            }
+
+            container.appendChild(node);
+        });
+    }
+
+    // Initialize viewer when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+        const jsonTreeContainer = document.getElementById('json-tree');
+        renderJsonTree(jsonData, jsonTreeContainer);
+    });
+})();
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+    "wyc@db": {
+        "users": {
+            "User1": {
+                "name": "John Doe",
+                "age": 32
+            }
+        }
+        
+    }
+}
