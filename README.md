@@ -25,6 +25,63 @@ This project is a full-stack web application for managing JSON data. It allows u
    - ❌ `/api/data/remove/wyc@db/<path>` - Remove a single or multiple fields of a node.
    - ❌ `/api/data/reset` - Reset database.
 
+## 🧑‍💻 Examples
+1. Set Only One Field
+   ```python
+   import requests
+   url = 'http://127.0.0.1:5000/api/data/set/wyc@db/users/User1/name'
+   payload = {"value": "John Doe"}
+
+   response = requests.post(url, json=payload)
+   print(response.json())  # Expected output: {"message": "Data set at some/key!"}
+   ```
+2. Append Data
+   ```python
+   import requests
+
+   url = 'http://127.0.0.1:5000/api/data/append/wyc@db/users'
+   payload = {
+       "value": {
+           "User2": {"name": "John Doe Part 2", "age": 12}
+       }
+   }
+
+   response = requests.post(url, json=payload)
+   print(response.json())  # Expected output: {"message": "Data appended at some/users!"}
+   ```
+3. Fetch All Data
+   ```python
+   import requests
+   response = requests.get('http://127.0.0.1:5000/api/data')
+   print(response.json())
+   ```
+4. Fetch Selected Data
+   ```python
+   import requests
+
+   response = requests.get('http://127.0.0.1:5000/api/data/get/wyc@db/users/User1')
+   print(response.json())  # This will print the value at the path "some/key"
+   ```
+
+5. Remove Data
+   ```python
+   import requests
+
+   url = 'http://127.0.0.1:5000/api/data/remove/wyc@db/users/User1/name'  # Provide the correct path for the selected field or node
+   payload = {}  # No need to send a value, just the endpoint for removal
+
+   response = requests.post(url, json=payload)
+   print(response.json())  # Expected output: {"message": "Data removed from some/key!"}
+   ```
+
+6. Reset Database
+   ```python
+   import requests
+
+   response = requests.post('http://127.0.0.1:5000/api/data/reset')
+   print(response.json())  # Expected output: {"message": "Database reset!"}
+   ```
+
 ## ⚙️ Installation
 1. Clone the repository:
    ```bash
@@ -35,17 +92,18 @@ This project is a full-stack web application for managing JSON data. It allows u
    cd json-tree-viewer
    ```
 3. Install dependencies:
-   ```bash
+   ```python
    pip install request flask
    ```
 4. Run the application:
-   ```bash
+   ```python
    python main.py
    ```
 5. Open your browser and go to `http://127.0.0.1:5000` 🌐.
 
 ## 🧑‍💻 Usage
 - 🌳 View the JSON tree structure on the homepage.
+- ![image](https://github.com/user-attachments/assets/4566ab72-8b71-4644-b36c-bb0ba4e026ca)
 - Use the API endpoints to interact with the JSON data programmatically.
 
 ## 🤝 Contributing
