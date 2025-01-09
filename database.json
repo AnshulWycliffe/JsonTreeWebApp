@@ -1,5 +1,5 @@
 {
-    "wyc@db": {
+    "nosql@db": {
         "users": {
             "User1": {
                 "name": "John Doe",

@@ -25,7 +25,7 @@ This project is a full-stack web application for managing JSON data. It allows u
    - ❌ `/api/data/remove/wyc@db/<path>` - Remove a single or multiple fields of a node.
    - ❌ `/api/data/reset` - Reset database.
 
-## 🧑‍💻 Examples
+## 🧑‍💻 Operations
 1. Set Only One Field
    ```python
    import requests
@@ -97,7 +97,7 @@ This project is a full-stack web application for managing JSON data. It allows u
    ```
 4. Run the application:
    ```python
-   python main.py
+   python app.py
    ```
 5. Open your browser and go to `http://127.0.0.1:5000` 🌐.
 
