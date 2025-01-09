@@ -3,7 +3,7 @@ import requests
 url = 'http://127.0.0.1:5000/api/data/append/wyc@db/users'
 payload = {
     "value": {
-        "User2": {"name": "John Doe Part 2", "age": 12}
+        "User2": {"name": "Peter Doe", "age": 12}
     }
 }
 

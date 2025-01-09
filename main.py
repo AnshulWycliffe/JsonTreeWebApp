@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import json
 import os
-import webview
+#import webview
 
 app = Flask(__name__)
 #window = webview.create_window("WyDBase",app,fullscreen=True,text_select=True,zoomable=True)
